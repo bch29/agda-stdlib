@@ -215,6 +215,8 @@ Non-backwards compatible changes
 
 #### Other
 
+* Removed support for GHC 7.8.4.
+
 * Renamed `Data.Container.FreeMonad.do` and `Data.Container.Indexed.FreeMonad.do`
   to `inn` as Agda 2.5.4 now supports proper 'do' notation.
 
@@ -234,6 +236,13 @@ Non-backwards compatible changes
   names are now used for proofs of left and right monotonicity of `_+_`.
 
 * Moved the proof `monoid` from `Data.List` to `++-monoid` in `Data.List.Properties`.
+
+* Names in Data.Nat.Divisibility now use the `divides` symbol (typed \\|) consistently.
+  Previously a mixture of \\| and | was used.
+
+* Starting from Agda 2.5.4 the GHC backend compiles `Coinduction.∞` in
+  a different way, and for this reason the GHC backend pragmas for
+  `Data.Colist.Colist` and `Data.Stream.Stream` have been modified.
 
 Deprecated features
 -------------------
@@ -411,10 +420,13 @@ Backwards compatible changes
 
 * Added support for GHC 8.2.2.
 
-* Added new module `Data.Table`. A `Table` is a fixed-length collection of objects
-  similar to a `Vec` from `Data.Vec`, but implemented as a function `Fin n → A`.
-  This prioritises ease of lookup as opposed to `Vec` which prioritises the ease
-  of adding and removing elements.
+* New module `Data.Word` for new builtin type `Agda.Builtin.Word.Word64`.
+
+* New modules `Data.Table`, `Data.Table.Base`,
+  `Data.Table.Relation.Equality` and `Data.Table.Properties`. A `Table` is a
+  fixed-length collection of objects similar to a `Vec` from `Data.Vec`, but
+  implemented as a function `Fin n → A`. This prioritises ease of lookup as opposed
+  to `Vec` which prioritises the ease of adding and removing elements.
 
 * The contents of the following modules are now more polymorphic with respect to levels:
   ```agda
