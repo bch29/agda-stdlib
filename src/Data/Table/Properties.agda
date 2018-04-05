@@ -28,6 +28,12 @@ open import Function.Inverse using (Inverse)
 open import Relation.Binary.PropositionalEquality as P using (_≡_)
 open import Relation.Nullary using (yes; no)
 
+map-toList-hom :
+  ∀ {n a b} {A : Set a} {B : Set b} {f : A → B} (t : Table A n)
+  → L.map f (toList t) ≡ toList (map f t)
+map-toList-hom {ℕ.zero} t = P.refl
+map-toList-hom {ℕ.suc n} t = P.cong₂ _∷_ P.refl (map-toList-hom (tail t))
+
 module _ {a} {A : Set a} where
 
   fromList-∈ : ∀ {xs : List A} (i : Fin (L.length xs)) → lookup (fromList xs) i ∈ xs
