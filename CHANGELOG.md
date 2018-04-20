@@ -8,14 +8,65 @@ Important changes since 0.15:
 Non-backwards compatible changes
 --------------------------------
 
+#### Upgrade of `Algebra.Operations`
+
+* Previously `Algebra.Operations` was parameterised by a semiring, however several of the
+  operators it defined depended only on the additive component. Therefore the modules have been
+  rearranged to allow more fine-grained use depending on the current position in the algebra
+  heirarchy. Currently there exist two modules:
+  ```
+  Algebra.Operations.CommutativeMonoid
+  Algebra.Operations.Semiring
+  ```
+  where `Algebra.Operations.Semiring` exports all the definitions previously exported
+  by `Algebra.Operations`. More modules may be added in future as required.
+
+  Also the fixity of `_×_`, `_×′_` and `_^_` have all been increased by 1.
+
+#### Upgrade of `takeWhile`, `dropWhile`, `span` and `break` in `Data.List`
+
+* These functions in `Data.List.Base` now use decidable
+  predicates instead of boolean-valued functions. The boolean versions discarded
+  type information, and hence were difficult to use and prove
+  properties about. The proofs have been updated and renamed accordingly.
+
+  The old boolean versions still exist as `boolTakeWhile`, `boolSpan` etc. for
+  backwards compatibility reasons, but are deprecated and may be removed in some
+  future release. The old versions can be implemented via the new versions
+  by passing the decidability proof `λ v → f v ≟ true` with `_≟_` from `Data.Bool`.
+
+#### Other
+
 * `Relation.Binary.Consequences` no longer exports `Total`. The standard way of accessing it
   through `Relation.Binary` remains unchanged.
+
+* Changed the associativity of `Relation.Unary`'s `_⇒_` from left to right.
+
+* Added new module `Relation.Unary.Properties`. The following proofs have been moved
+  to the new module from `Relation.Unary`:
+  ```agda
+  ∅-Empty, ∁∅-Universal, U-Universal, ∁U-Empty, ∅-⊆, ⊆-U, ∁?
+  ```
 
 * Added `swap : A ⊎ B → B ⊎ A` to `Data.Sum`. This may conflict with `swap` in `Data.Product`.
   If so then it may be necessary to qualify imports with either `using` or `hiding`.
 
+* The decidability proofs `_≟_` and `_<?_` are now exported by `Data.Fin` as well as
+  `Data.Fin.Properties` to improve consistency across the library. They may conflict with
+  `_≟_` and `_<?_` in `Data.Nat` or others. If so then it may be necessary to qualify imports
+  with either `using` or `hiding`.
+
+* Changed the associativity of `Relation.Unary`'s `_⇒_` from left to right.
+
+* Refactored and moved `↔Vec` from `Data.Product.N-ary` to `Data.Product.N-ary.Properties`.
+
 Deprecated features
 -------------------
+
+The following renaming has occurred as part of a drive to improve consistency across
+the library. The old names still exist and therefore all existing code should still
+work, however they have been deprecated and use of the new names is encouraged. Although not
+anticipated any time soon, they may eventually be removed in some future release of the library.
 
 * Closures of binary relations have been centralised as follows:
   ```agda
@@ -27,6 +78,24 @@ Deprecated features
   Relation.Binary.EquivalenceClosure ↦ Relation.Binary.Closure.Equivalence
   ```
   The old files still exist and re-export the contents of the new modules.
+
+* In `Relation.Binary.NonStrictToStrict`:
+  ```agda
+  irrefl         ↦ <-irrefl
+  trans          ↦ <-trans
+  antisym⟶asym ↦ <-asym
+  decidable      ↦ <-decidable
+  trichotomous   ↦ <-trichotomous
+
+  isPartialOrder⟶isStrictPartialOrder ↦ <-isStrictPartialOrder
+  isTotalOrder⟶isStrictTotalOrder     ↦ <-isStrictTotalOrder₁
+  isDecTotalOrder⟶isStrictTotalOrder  ↦ <-isStrictTotalOrder₂
+  ```
+
+* In `IsStrictPartialOrder` in `Relation.Binary`:
+  ```agda
+  asymmetric ↦ asym
+  ```
 
 Removed features
 ----------------
@@ -46,6 +115,12 @@ Backwards compatible changes
   zeroʳ     : RightZero 0# _*_
   distribˡ  : _*_ DistributesOverˡ _+_
   distribʳ  : _*_ DistributesOverʳ _+_
+  ```
+
+* Added new functions to `Algebra.Operations.CommutativeMonoid`:
+  ```agda
+  sumₗ = List.foldr _+_ 0#
+  sumₜ = Table.foldr _+_ 0#
   ```
 
 * Added a new module `Function.Reasoning` for creating multi-stage function pipelines.
@@ -73,6 +148,14 @@ Backwards compatible changes
   unzip : All (P ∩ Q) ⊆ All P ∩ All Q
   ```
 
+* Added new proofs to `Data.List.Properties`:
+  ```agda
+  tabulate-cong : f ≗ g → tabulate f ≡ tabulate g
+  tabulate-lookup : tabulate (lookup xs) ≡ xs
+  ```
+
+* Added new modules `Data.List.Zipper` and `Data.List.Zipper.Properties`.
+
 * Added new proofs to `Data.Nat.Properties`:
   ```agda
   m+n≮m          : m + n ≮ m
@@ -92,9 +175,105 @@ Backwards compatible changes
   ∸-distribˡ-⊔-⊓ : x ∸ (y ⊔ z) ≡ (x ∸ y) ⊓ (x ∸ z)
   ```
 
+* Added new functions to `Data.Product.N-ary`:
+  ```agda
+  _∈[_]_     : A → ∀ n → A ^ n → Set a
+  cons       : ∀ n → A → A ^ n → A ^ suc n
+  uncons     : ∀ n → A ^ suc n → A × A ^ n
+  head       : ∀ n → A ^ suc n → A
+  tail       : ∀ n → A ^ suc n → A ^ n
+  lookup     : ∀ (k : Fin n) → A ^ n → A
+  replicate  : ∀ n → A → A ^ n
+  tabulate   : ∀ n → (Fin n → A) → A ^ n
+  append     : ∀ m n → A ^ m → A ^ n → A ^ (m + n)
+  splitAt    : ∀ m n → A ^ (m + n) → A ^ m × A ^ n
+  map        : (A → B) → ∀ n → A ^ n → B ^ n
+  ap         : ∀ n → (A → B) ^ n → A ^ n → B ^ n
+  foldr      : P 0 → (A → P 1) → (∀ n → A → P (suc n) → P (2+ n)) → ∀ n → A ^ n → P n
+  foldl      : P 0 → (A → P 1) → (∀ n → A → P (suc n) → P (2+ n)) → ∀ n → A ^ n → P n
+  reverse    : ∀ n → A ^ n → A ^ n
+  zipWith    : (A → B → C) → ∀ n → A ^ n → B ^ n → C ^ n
+  unzipWith  : (A → B × C) → ∀ n → A ^ n → B ^ n × C ^ n
+  zip        : ∀ n → A ^ n → B ^ n → (A × B) ^ n
+  unzip      : ∀ n → (A × B) ^ n → A ^ n × B ^ n
+  ```
+
+* Added new proofs to `Data.Product.N-ary.Properties`:
+  ```agda
+  cons-head-tail-identity : cons n (head n as) (tail n as) ≡ as
+  head-cons-identity      : head n (cons n a as) ≡ a
+  tail-cons-identity      : tail n (cons n a as) ≡ as
+  append-cons-commute     : append (suc m) n (cons m a xs) ys ≡ cons (m + n) a (append m n xs ys)
+  append-splitAt-identity : uncurry (append m n) (splitAt m n as) ≡ as
+  ```
+
 * Added new proof to `Data.Sum`:
   ```agda
   swap-involutive : swap ∘ swap ≗ id
+  ```
+
+* Added new types to `Relation.Binary.Core`:
+  ```agda
+  P Respectsʳ _∼_ = ∀ {x} → (P x)      Respects _∼_
+  P Respectsˡ _∼_ = ∀ {y} → (flip P y) Respects _∼_
+  ```
+  Records in `Relation.Binary` export these in addition to the standard `Respects₂` proofs.
+  e.g. `IsStrictPartialOrder` exports:
+  ```agda
+  <-respˡ-≈ : _<_ Respectsˡ _≈_
+  <-respʳ-≈ : _<_ Respectsʳ _≈_
+  ```
+
+* Added new proof to `IsStrictTotalOrder` and `StrictTotalOrder` in `Relation.Binary`:
+  ```agda
+  asym : Asymmetric _<_
+  ```
+
+* Added `_≡⟨_⟩_` combinator  to `Relation.Binary.PreorderReasoning`.
+
+* Added new proofs to `Relation.Binary.NonStrictToStrict`:
+  ```agda
+  <-respˡ-≈ : _≤_ Respectsˡ _≈_ → _<_ Respectsˡ _≈_
+  <-respʳ-≈ : _≤_ Respectsʳ _≈_ → _<_ Respectsʳ _≈_
+
+  <≤-trans : Transitive _≤_ → Antisymmetric _≈_ _≤_ → _≤_ Respectsʳ _≈_ → Trans _<_ _≤_ _<_
+  ≤<-trans : Transitive _≤_ → Antisymmetric _≈_ _≤_ → _≤_ Respectsˡ _≈_ → Trans _≤_ _<_ _<_
+  ```
+
+* Added new proofs to `Relation.Binary.Consequences`:
+  ```agda
+  subst⟶respˡ : Substitutive _∼_ p → P Respectsˡ _∼_
+  subst⟶respʳ : Substitutive _∼_ p → P Respectsʳ _∼_
+
+  trans∧tri⟶respʳ≈ : Transitive _<_ → Trichotomous _≈_ _<_ → _<_ Respectsʳ _≈_
+  trans∧tri⟶respˡ≈ : Transitive _<_ → Trichotomous _≈_ _<_ → _<_ Respectsˡ _≈_
+  ```
+
+* Added new proof to `Relation.Binary.PropositionalEquality`:
+  ```agda
+  ≡-≟-identity : (eq : a ≡ b) → a ≟ b ≡ yes eq
+  ≢-≟-identity : a ≢ b → ∃ λ ¬eq → a ≟ b ≡ no ¬eq
+  ```
+
+* The types `Maximum` and `Minimum` are now exported by `Relation.Binary` as well
+  as `Relation.Binary.Lattice`.
+
+* Added new module `Relation.Binary.Indexed.Homogeneous`. This module defines
+  homogeneously-indexed binary relations, as opposed to the
+  heterogeneously-indexed binary relations found in `Relation.Binary.Indexed`.
+
+* Added new proofs to `Relation.Unary.Properties`:
+  ```agda
+  ⊆-refl  : Reflexive _⊆_
+  ⊆-trans : Transitive _⊆_
+  ⊂-asym  : Asymmetric _⊂_
+
+  _∪?_ : Decidable P → Decidable Q → Decidable (P ∪ Q)
+  _∩?_ : Decidable P → Decidable Q → Decidable (P ∩ Q)
+  _×?_ : Decidable P → Decidable Q → Decidable (P ⟨×⟩ Q)
+  _⊙?_ : Decidable P → Decidable Q → Decidable (P ⟨⊙⟩ Q)
+  _⊎?_ : Decidable P → Decidable Q → Decidable (P ⟨⊎⟩ Q)
+  _~?  : Decidable P → Decidable (P ~)
   ```
 
 Version 0.15
