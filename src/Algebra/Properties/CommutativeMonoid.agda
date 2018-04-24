@@ -163,8 +163,8 @@ select-sum {suc n} {i} t =
     f i                                                                 ∎
 
 sumₜ-fromList : ∀ xs → sumₜ (fromList xs) ≡ sumₗ xs
-sumₜ-fromList List.[] = PE.refl
-sumₜ-fromList (x List.∷ xs) = PE.cong₂ _+_ PE.refl (sumₜ-fromList xs)
+sumₜ-fromList [] = PE.refl
+sumₜ-fromList (x ∷ xs) = PE.cong₂ _+_ PE.refl (sumₜ-fromList xs)
 
 sumₜ-toList : ∀ {n} (t : Table Carrier n) → sumₜ t ≡ sumₗ (toList t)
 sumₜ-toList {zero} _ = PE.refl
