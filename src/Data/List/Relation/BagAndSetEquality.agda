@@ -393,9 +393,9 @@ module _ {a} {A : Set a} where
   bag-permutation-correct : ∀ {xs ys : List A} (p : xs ∼[ bag ] ys) → T.fromList xs TR.≗ (T.permute (bag-permutation p) (T.fromList ys))
   bag-permutation-correct {xs} {ys} p i =
     begin
-      lookup (fromList xs) i                                        ≡⟨ P.sym (TP.fromList-index (Inverse.to p ⟨$⟩ TP.fromList-∈ i)) ⟩
+      lookup (fromList xs) i                                           ≡⟨ P.sym (TP.fromList-index (Inverse.to p ⟨$⟩ TP.fromList-∈ i)) ⟩
       lookup (fromList ys) (index (Inverse.to p ⟨$⟩ TP.fromList-∈ i))  ≡⟨⟩
-      lookup (T.permute (bag-permutation p) (fromList ys)) i      ∎
+      lookup (T.permute (bag-permutation p) (fromList ys)) i           ∎
     where
       open P.≡-Reasoning
       open T
