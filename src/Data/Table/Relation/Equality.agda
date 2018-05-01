@@ -6,16 +6,24 @@
 
 module Data.Table.Relation.Equality where
 
-open import Relation.Binary using (Rel; Setoid)
+open import Relation.Binary using (REL; Rel; Setoid)
 open import Data.Table.Base
 open import Data.Nat using (ℕ; suc; zero)
 open import Data.Fin using (Fin; suc; zero)
+open import Data.Product using (_×_; _,_)
 open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality
   as P using (_≡_; _→-setoid_)
+open import Relation.Binary.HeterogeneousEquality as H using (_≅_)
 
 Pointwise : ∀ {n} {a ℓ} {A : Set a} → Rel A ℓ → Rel (Table A n) ℓ
 Pointwise _∼_ t t′ = ∀ i → lookup t i ∼ lookup t′ i
+
+Pointwise′ : ∀ {m n} {a a′ ℓ} {A : Set a} {A′ : Set a′} → REL A A′ ℓ → REL (Table A m) (Table A′ n) ℓ
+Pointwise′ {m} {n} _∼_ t t′ = m ≡ n × ∀ i i′ → i ≅ i′ → lookup t i ∼ lookup t′ i′
+
+Pointwise⇒Pointwise′ : ∀ {n} {a ℓ} {A : Set a} (_∼_ : Rel A ℓ) {t t′ : Table A n} → Pointwise _∼_ t t′ → Pointwise′ _∼_ t t′
+Pointwise⇒Pointwise′ _∼_ p = P.refl , (λ {i .i H.refl → p i})
 
 module _ {c p} (S : Setoid c p) where
   open Setoid S
