@@ -8,8 +8,8 @@ open import Algebra using (CommutativeMonoid)
 
 module Data.List.Any.Properties.CommutativeMonoid {c ℓ} (commutativeMonoid : CommutativeMonoid c ℓ) where
 
-open import Data.List.Any.Membership.Propositional using (bag; [_]-Equality; _∼[_]_)
-open import Data.List.Any.BagAndSetEquality using (bag-permutation; bag-permutation-correct)
+open import Data.List.Relation.BagAndSetEquality
+  using (bag; [_]-Equality; _∼[_]_; bag-permutation; bag-permutation-correct)
 import Data.Table as Tbl using (fromList; permute)
 
 open import Relation.Binary using (Setoid)
