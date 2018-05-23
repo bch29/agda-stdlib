@@ -7,7 +7,7 @@
 module Data.Table.Base where
 
 open import Data.Nat
-open import Data.Fin
+open import Data.Fin hiding (_+_)
 open import Data.Product using (_×_ ; _,_)
 open import Data.List as List using (List)
 open import Function using (_∘_)
@@ -65,3 +65,8 @@ replicate x = tabulate (λ _ → x)
 
 _⊛_ : ∀ {n a b} {A : Set a} {B : Set b} → Table (A → B) n → Table A n → Table B n
 fs ⊛ xs = tabulate λ i → lookup fs i (lookup xs i)
+
+-- Specialized folds
+
+sum : ∀ {n} → Table ℕ n → ℕ
+sum = foldr _+_ 0

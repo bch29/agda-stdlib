@@ -31,6 +31,10 @@ map-toList-hom :
 map-toList-hom {zero} t = P.refl
 map-toList-hom {suc n} t = P.cong₂ _∷_ P.refl (map-toList-hom (tail t))
 
+foldr-toList-hom : ∀ {n a b} {A : Set a} {B : Set b} {f : A → B → B} {z : B} (t : Table A n) → L.foldr f z (toList t) ≡ foldr f z t
+foldr-toList-hom {zero} t = P.refl
+foldr-toList-hom {suc n} {f = f} {z} t = P.cong (f (lookup t zero)) (foldr-toList-hom (tail t))
+
 module _ {a} {A : Set a} where
 
   fromList-∈ : ∀ {xs : List A} (i : Fin (L.length xs)) → lookup (fromList xs) i ∈ xs

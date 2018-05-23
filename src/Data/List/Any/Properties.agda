@@ -594,7 +594,7 @@ module _ {ℓ p} {A B : Set ℓ} {P : B → Set p} {f : A → List B} where
 
 module _ {ℓ} {A B : Set ℓ} where
 
-  ⊛↔ : ∀ {P : B → Set ℓ} {fs : List (A → B)} {xs : List A} →
+  ⊛↔ : ∀ {p} {P : B → Set p} {fs : List (A → B)} {xs : List A} →
        Any (λ f → Any (P ∘ f) xs) fs ↔ Any P (fs ⊛ xs)
   ⊛↔ {P = P} {fs} {xs} =
     Any (λ f → Any (P ∘ f) xs) fs               ↔⟨ Any-cong (λ _ → Any-cong (λ _ → return↔) (_ ∎)) (_ ∎) ⟩
@@ -615,17 +615,17 @@ module _ {ℓ} {A B : Set ℓ} where
 
 module _ {ℓ} {A B : Set ℓ} where
 
-  ⊗↔ : {P : A × B → Set ℓ} {xs : List A} {ys : List B} →
+  ⊗↔ : ∀ {p} {P : A × B → Set p} {xs : List A} {ys : List B} →
        Any (λ x → Any (λ y → P (x , y)) ys) xs ↔ Any P (xs ⊗ ys)
-  ⊗↔ {P} {xs} {ys} =
+  ⊗↔ {P = P} {xs} {ys} =
     Any (λ x → Any (λ y → P (x , y)) ys) xs                             ↔⟨ return↔ ⟩
     Any (λ _,_ → Any (λ x → Any (λ y → P (x , y)) ys) xs) (return _,_)  ↔⟨ ⊛↔ ⟩
     Any (λ x, → Any (P ∘ x,) ys) (_,_ <$> xs)                           ↔⟨ ⊛↔ ⟩
     Any P (xs ⊗ ys)                                                     ∎
 
-  ⊗↔′ : {P : A → Set ℓ} {Q : B → Set ℓ} {xs : List A} {ys : List B} →
+  ⊗↔′ : ∀ {p q} {P : A → Set p} {Q : B → Set q} {xs : List A} {ys : List B} →
         (Any P xs × Any Q ys) ↔ Any (P ⟨×⟩ Q) (xs ⊗ ys)
-  ⊗↔′ {P} {Q} {xs} {ys} =
+  ⊗↔′ {P = P} {Q} {xs} {ys} =
     (Any P xs × Any Q ys)                    ↔⟨ ×↔ ⟩
     Any (λ x → Any (λ y → P x × Q y) ys) xs  ↔⟨ ⊗↔ ⟩
     Any (P ⟨×⟩ Q) (xs ⊗ ys)                  ∎

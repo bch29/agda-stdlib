@@ -42,6 +42,14 @@ module _ {c p} (S : Setoid c p) where
   tail-cong : ∀ {n} {t t′ : Table Carrier (suc n)} → Pointwise _≈_ t t′ → Pointwise _≈_ (tail t) (tail t′)
   tail-cong eq = eq ∘ suc
 
+  foldr-cong : ∀ {n} {_∙_ : Carrier → Carrier → Carrier} {z} →
+    (∀ {x x′ y y′} → x ≈ x′ → y ≈ y′ → (x ∙ y) ≈ (x′ ∙ y′)) →
+    {t t′ : Table Carrier n} →
+    Pointwise _≈_ t t′ →
+    foldr _∙_ z t ≈ foldr _∙_ z t′
+  foldr-cong {zero} {_∙_} ∙-cong {t} {t′} t≈t′ = refl
+  foldr-cong {suc n} {_∙_} ∙-cong {t} {t′} t≈t′ = ∙-cong (t≈t′ zero) (foldr-cong ∙-cong (tail-cong t≈t′))
+
 ≡-setoid : ∀ {a} → Set a → ℕ → Setoid _ _
 ≡-setoid A = setoid (P.setoid A)
 

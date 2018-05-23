@@ -382,6 +382,17 @@ i+j≡0⇒j≡0 i {j} i+j≡0 = i+j≡0⇒i≡0 j (trans (+-comm j i) (i+j≡0))
 +-cancel-≤ : Cancellative _≤_ _+_
 +-cancel-≤ = +-cancelˡ-≤ , +-cancelʳ-≤
 
++-cancelˡ-< : LeftCancellative _<_ _+_
++-cancelˡ-< zero    lt       = lt
++-cancelˡ-< (suc m) (s≤s lt) = +-cancelˡ-< m lt
+
++-cancelʳ-< : RightCancellative _<_ _+_
++-cancelʳ-< {m} n o le =
+  +-cancelˡ-< m (subst₂ _<_ (+-comm n m) (+-comm o m) le)
+
++-cancel-< : Cancellative _<_ _+_
++-cancel-< = +-cancelˡ-< , +-cancelʳ-<
+
 ≤-stepsˡ : ∀ {m n} o → m ≤ n → m ≤ o + n
 ≤-stepsˡ zero    m≤n = m≤n
 ≤-stepsˡ (suc o) m≤n = ≤-step (≤-stepsˡ o m≤n)
