@@ -23,7 +23,8 @@ main = do
                find always
                     (extension ==? ".agda" ||? extension ==? ".lagda")
                     srcDir
-  headers <- mapM extractHeader modules
+  -- headers <- mapM extractHeader modules
+  let headers = map (\_ -> []) modules
 
   writeFileUTF8 outputFile $
     header ++ format (zip modules headers)
@@ -54,17 +55,23 @@ isLibraryModule f =
 
 -- | Reads a module and extracts the header.
 
-extractHeader :: FilePath -> IO [String]
-extractHeader mod = fmap (extract . lines) $ readFileUTF8 mod
-  where
-  delimiter = all (== '-')
+-- extractHeader :: FilePath -> IO [String]
+-- extractHeader mod =
+--   -- return []
+--   fmap (extract . lines) $ readFileUTF8 mod
+--   where
+--   delimiter = all (== '-')
 
-  extract (d1 : "-- The Agda standard library" : "--" : ss)
-    | delimiter d1
-    , (info, d2 : rest) <- span ("-- " `List.isPrefixOf`) ss
-    , delimiter d2
-    = info
-  extract _ = error $ mod ++ " is malformed."
+--   extract (d1 : _)
+--     | not (delimiter d1)
+--     , last d1 == '\r'
+--     = error $ mod ++ " contains \\r, probably due to git misconfiguration; maybe set autocrf to input?"
+--   extract (d1 : "-- The Agda standard library" : "--" : ss)
+--     | delimiter d1
+--     , (info, d2 : rest) <- span ("-- " `List.isPrefixOf`) ss
+--     , delimiter d2
+--     = info
+--   extract _ = error $ mod ++ " is malformed."
 
 -- | Formats the extracted module information.
 
