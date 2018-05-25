@@ -29,7 +29,7 @@ sum-bag : ∀ {xs ys} → xs ∼[ bag ] ys → sumₗ xs ≈ sumₗ ys
 sum-bag {xs} {ys} p =
   begin
     sumₗ xs                                                    ≡⟨ P.sym (sumₜ-fromList xs) ⟩
-    sumₜ (Tbl.fromList xs)                                     ≡⟨ sumₜ-cong≡ (bag-permutation-correct p) ⟩
+    sumₜ (Tbl.fromList xs)                                     ≡⟨ sumₜ-cong-≡ (bag-permutation-correct p) ⟩
     sumₜ (Tbl.permute (bag-permutation p) (Tbl.fromList ys))   ≈⟨ sym (sumₜ-permute′ (Tbl.fromList ys) (bag-permutation p)) ⟩
     sumₜ (Tbl.fromList ys)                                     ≡⟨ sumₜ-fromList ys ⟩
     sumₗ ys                                                    ∎
